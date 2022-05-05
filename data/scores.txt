@@ -1,0 +1,16 @@
+Rick,473
+Morty,352
+Francesco Bernoulli,238
+Daniel,235
+Norha,235
+Camila,233
+Chick Hicks,119
+Cristian,119
+El Rey,119
+Iván,119
+Rayo McQueen,119
+Reyes,119
+Domiciano,118
+Fernanda,118
+Juan José,117
+Juan Pablo,116

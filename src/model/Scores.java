@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 
 public class Scores {
@@ -17,7 +18,7 @@ public class Scores {
 		importScores();
 	}
 
-	public void addScore(String n, int s) {
+	public void addScore(String n, int s) throws FileNotFoundException, IOException {
 		boolean stop = false;
 		for(int i = 0; i<scores.size() && !stop; i++) {
 			if(n.equals(scores.get(i).getName())) {
@@ -30,20 +31,46 @@ public class Scores {
 			temp.plusScore(s);
 			scores.add(temp);
 		}
+		orderByScore();
+		exportScores();
 	}
 
-	public String print() {
+	private void orderByScore() {
+		boolean inversion = true;
+		for (int i = 0; i < scores.size() && inversion; i++) {
+ 			inversion = false;
+ 	    	for (int j = 1; j < scores.size() - i; j++) {
+ 	    		if (scores.get(j).compareTo(scores.get(j-1)) > 0) {
+ 	    			User temp = scores.get(j);
+ 	    			scores.set(j, scores.get(j-1));
+ 	    			scores.set(j-1, temp);
+ 	    			inversion = true;
+ 	    		}
+ 	    	}
+ 	    }
+	}
+
+	public String print() throws FileNotFoundException {
 		String msg = "\nTOP 5 SCORES\n\n";
 		msg += String.format("%-20s", "USERNAME") + " " + String.format("%-20s", "SCORE") + "\n\n";
-		for(int i = 0; i<scores.size(); i++) {
+		for(int i = 0; i<scores.size() && i<5; i++) {
 			msg += scores.get(i).toString() + "\n";
 		}
+		saveScores();
 		return msg;
+	}
+
+	private void saveScores() throws FileNotFoundException {
+		PrintWriter writer = new PrintWriter("data/scores.txt");
+		for(int i = 0; i<scores.size(); i++) {
+			writer.println(scores.get(i).save());
+		}
+		writer.close();
 	}
 
 	private void importScores() {
 		try{
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream("data/scores.rym"));
+			ObjectInputStream ois = new ObjectInputStream(new FileInputStream("data/scores.ram"));
 			Object temp = ois.readObject();
 			while(temp != null) {
 				User user = (User) temp;
@@ -57,10 +84,14 @@ public class Scores {
 	}
 
 	public void exportScores() throws FileNotFoundException, IOException {
-		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data/scores.rym"));
+		ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream("data/scores.ram"));
 		for(int i=0; i<scores.size(); i++) {
 			oos.writeObject(scores.get(i));
 		}
 		oos.close();
+	}
+	
+	public void emptyScores() {
+		scores = new ArrayList<>();
 	}
 }
